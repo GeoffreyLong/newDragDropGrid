@@ -1,0 +1,14 @@
+html, body{
+  height:100%;
+  width:100%;
+  margin:0;
+  buffer:0;
+  overflow:hidden;
+}
+#grid{
+  position:absolute;
+  left:15%;
+  height:100%;
+  width:70%;
+  background:#345678;
+}
