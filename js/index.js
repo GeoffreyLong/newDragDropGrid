@@ -24,13 +24,10 @@ $(document).ready(function(){
         for (var j=0; j < parseInt(width); j++){
           var drop = $('<div class="drop"></div>');
           drop.css({
-            'position':'absolute',
             'height':this.cellHeight+'px',
             'width':this.cellWidth+'px',
             'top':(i)*this.cellHeight+'px',
             'left':(j)*this.cellWidth+'px',
-            'background':'#123456',
-            'border': '2px solid #000000',
           });
           drop.attr('data-isOccupied', false);
           drop.attr('data-row', i);
