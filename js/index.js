@@ -29,16 +29,21 @@ $(document).ready(function(){
             'width':this.cellWidth+'px',
             'top':(i)*this.cellHeight+'px',
             'left':(j)*this.cellWidth+'px',
-            'background':'#000000'
-          });
-          drop.click(function(){
-            alert('hello');
+            'background':'#123456',
+            'border': '2px solid #000000',
           });
           drop.attr('data-isOccupied', false);
           drop.attr('data-row', i);
           drop.attr('data-column', j);
           console.log(drop.attr('data-row'));
-          //drop.droppable();
+          drop.droppable({
+            over: function(event, ui){
+              $(this).css({'border': '2px solid #000000'});
+            },
+          });
+          drop.click(function(){
+            alert($(this).attr('data-row'));
+          });
           elm.append(drop);
         }
       }
