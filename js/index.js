@@ -76,6 +76,7 @@ $(document).ready(function(){
   
   grid.init($('#grid'), 4, 4);
 
+  // This function is just for demonstration purposes
   function createDraggables(){
     for (var i = 0; i < 3; i++){
       var drag = $('<div class="drag"></div>');
