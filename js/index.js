@@ -5,17 +5,17 @@ $(document).ready(function(){
     // to a better function design
 
     this.init = function(elm, height, width){
-      this.setCellHeight(elm, height);
-      this.setCellWidth(elm, width);
-      this.createCells(elm, height, width);
-      this.startDrop();
+      setCellHeight(elm, height);
+      setCellWidth(elm, width);
+      createCells(elm, height, width);
+      startDrop();
     };
 
-    this.setCellHeight = function(elm, height){
+    setCellHeight = function(elm, height){
       this.cellHeight = elm.height() / height;
     };
 
-    this.setCellWidth = function(elm, width){
+    setCellWidth = function(elm, width){
       this.cellWidth = elm.width() / width;
     };
 
@@ -27,7 +27,7 @@ $(document).ready(function(){
       return this.cellHeight;
     };
 
-    this.createCells = function(elm, height, width){
+    createCells = function(elm, height, width){
       for (var i=0; i < parseInt(height); i++){
         for (var j=0; j < parseInt(width); j++){
           var drop = $('<div class="drop"></div>');
@@ -45,7 +45,7 @@ $(document).ready(function(){
       }
     };
 
-    this.startDrop = function(){
+    startDrop = function(){
       $('.drop').droppable({
         over: function(event, ui){
           $(this).addClass('status-over');
@@ -69,12 +69,19 @@ $(document).ready(function(){
             $(this).attr('data-isOccupied', dragId);
             $(this).droppable('option', 'accept', ui.draggable);
           }
+          
+          ui.draggable.position( { of: $(this), my: 'center', at: 'center' } );
         },
       });
     };
   }();
-  
-  grid.init($('#grid'), 4, 4);
+ 
+
+  var numberOfRows = 4;
+  var numberOfCols = 4;
+  grid.init($('#grid'), numberOfRows, numberOfCols);
+
+  createDraggables();
 
   // This function is just for demonstration purposes
   function createDraggables(){
@@ -88,8 +95,6 @@ $(document).ready(function(){
       $('body').append(drag);
     }
   }
-
-  createDraggables();
 
   $('.drag').draggable({
     revert: function(wasDropped){
