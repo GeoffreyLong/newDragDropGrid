@@ -1,25 +1,33 @@
 $(document).ready(function(){
   // Takes in an element, the number of rows, and the number of columns
-  grid = (function(elm, height, width){
-    this.elm = elm;
-    this.cellHeight = 0;
-    this.cellWidth = 0;
+  var grid = new function(){
+    // TODO should probably clean up the instantiation
+    // to a better function design
 
-    init = (function(){
-      setCellHeight();
-      setCellWidth();
-      createCells();
-    });
+    this.init = function(elm, height, width){
+      this.setCellHeight(elm, height);
+      this.setCellWidth(elm, width);
+      this.createCells(elm, height, width);
+      this.startDrop();
+    };
 
-    setCellHeight = function(){
+    this.setCellHeight = function(elm, height){
       this.cellHeight = elm.height() / height;
     };
 
-    setCellWidth = function(){
+    this.setCellWidth = function(elm, width){
       this.cellWidth = elm.width() / width;
     };
 
-    createCells = function(){
+    this.getCellWidth = function(){
+      return this.cellWidth;
+    };
+
+    this.getCellHeight = function(){
+      return this.cellHeight;
+    };
+
+    this.createCells = function(elm, height, width){
       for (var i=0; i < parseInt(height); i++){
         for (var j=0; j < parseInt(width); j++){
           var drop = $('<div class="drop"></div>');
@@ -29,43 +37,74 @@ $(document).ready(function(){
             'top':(i)*this.cellHeight+'px',
             'left':(j)*this.cellWidth+'px',
           });
-          drop.attr('data-isOccupied', false);
+          drop.attr('data-isOccupied', '-1');
           drop.attr('data-row', i);
           drop.attr('data-column', j);
-          drop.droppable({
-            over: function(event, ui){
-              if ($(this).attr('data-isOccupied') == 'false'){
-                $(this).addClass('status-over');
-              }
-            },
-            out: function(event, ui){
-              $(this).removeClass('status-over');
-            },
-            drop: function(event, ui){
-              alert('hello');
-            },
-          });
-          drop.click(function(){
-            alert($(this).attr('data-row'));
-          });
           elm.append(drop);
         }
       }
-    }
+    };
 
-    init();
-  })
-  grid($('#grid'), 4, 4);
+    this.startDrop = function(){
+      $('.drop').droppable({
+        over: function(event, ui){
+          $(this).addClass('status-over');
+        },
+        out: function(event, ui){
+          var unoccupied = $(this).attr('data-isOccupied') == '-1';
+          var occupiedByDragged = $(this).attr('data-isOccupied') == ui.draggable.attr('data-id');
+          if (occupiedByDragged || unoccupied){ 
+            $(this).removeClass('status-over');
+            if (occupiedByDragged)
+              $(this).addClass('in-transit');
+          }
+        },
+        drop: function(event, ui){
+          if ($(this).attr('data-isOccupied') == '-1'){
+            var dragId = ui.draggable.attr('data-id');
+            if (!dragId){
+              dragId = new Date().getTime();
+            }
+            ui.draggable.attr('data-id', dragId);
+            $(this).attr('data-isOccupied', dragId);
+            $(this).droppable('option', 'accept', ui.draggable);
+          }
+        },
+      });
+    };
+  }();
+  
+  grid.init($('#grid'), 4, 4);
 
   function createDraggables(){
     for (var i = 0; i < 3; i++){
       var drag = $('<div class="drag"></div>');
 
-      drag.css({'top': 50*i+5+'px'});
-      drag.draggable();
+      drag.css({
+        'top': 60*i+10+'px',
+        'left': '10px',
+      });
       $('body').append(drag);
     }
   }
 
   createDraggables();
-})
+
+  $('.drag').draggable({
+    revert: function(wasDropped){
+      var previousDrop = $('.in-transit');
+      if (wasDropped){
+        previousDrop.attr('data-isOccupied', -1);
+        previousDrop.droppable('option', 'accept', '.drag');
+        previousDrop.removeClass('in-transit');
+        return false;
+      }
+      else{
+        previousDrop.removeClass('in-transit');
+        previousDrop.addClass('status-over');
+        return true;
+      }
+    },
+  });
+  
+});
