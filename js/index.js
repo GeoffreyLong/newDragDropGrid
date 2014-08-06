@@ -5,26 +5,22 @@ $(document).ready(function(){
     // to a better function design
 
     this.init = function(elm, height, width){
-      setCellHeight(elm, height);
-      setCellWidth(elm, width);
       createCells(elm, height, width);
       startDrop();
     };
 
-    setCellHeight = function(elm, height){
-      this.cellHeight = elm.height() / height;
+    $(window).resize(function(){
+      $('.drag').each(function(){
+        $(this).position( { of: $('.drop[data-isOccupied="'+$(this).attr('data-id')+'"]'), my: 'center', at: 'center' } );
+      });
+    });
+
+    getCellHeight = function(height){
+      return 1/height * 100;
     };
 
-    setCellWidth = function(elm, width){
-      this.cellWidth = elm.width() / width;
-    };
-
-    this.getCellWidth = function(){
-      return this.cellWidth;
-    };
-
-    this.getCellHeight = function(){
-      return this.cellHeight;
+    getCellWidth = function(width){
+      return 1/width * 100;
     };
 
     createCells = function(elm, height, width){
@@ -32,10 +28,10 @@ $(document).ready(function(){
         for (var j=0; j < parseInt(width); j++){
           var drop = $('<div class="drop"></div>');
           drop.css({
-            'height':this.cellHeight+'px',
-            'width':this.cellWidth+'px',
-            'top':(i)*this.cellHeight+'px',
-            'left':(j)*this.cellWidth+'px',
+            'height':getCellHeight(height)+'%',
+            'width':getCellWidth(width)+'%',
+            'top':(i)*getCellHeight(height)+'%',
+            'left':(j)*getCellWidth(width)+'%',
           });
           drop.attr('data-isOccupied', '-1');
           drop.attr('data-row', i);
